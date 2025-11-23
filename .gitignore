@@ -1,0 +1,12 @@
+# Snakemake internals
+.snakemake/
+
+# SLURM / cluster logs
+slurm_logs/
+*.out
+*.err
+*.log
+
+# Results and other large outputs (optional but recommended)
+results/
+
