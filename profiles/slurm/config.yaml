@@ -1,0 +1,32 @@
+# profiles/slurm/config.yaml
+
+# Use the built-in Slurm executor (Snakemake >=7/8)
+executor: slurm
+
+# How many jobs Snakemake is allowed to have in parallel on Slurm
+jobs: 50
+
+# Total cores Snakemake can allocate across all running jobs
+cores: 64
+
+# Default resources used when a rule doesn't explicitly set them.
+# (Your rules already set mem_mb and runtime for most heavy steps,
+# this just provides sane fallbacks.)
+default-resources:
+  - runtime=60        # minutes
+  - mem_mb=4000       # 4 GB
+  - tmpdir="/global/scratch/hpc6049/tmp"
+
+# General behaviour
+latency-wait: 120          # seconds to wait for files to appear
+restart-times: 1           # retry failed jobs once
+keep-going: true           # keep running if some jobs fail
+printshellcmds: true       # show the executed shell commands
+
+max-jobs-per-second: 5
+max-status-checks-per-second: 5
+
+# We’re not using Snakemake’s conda/apptainer integration,
+# because you call `module load apptainer` + `apptainer exec` inside rules.
+use-conda: false
+use-apptainer: false

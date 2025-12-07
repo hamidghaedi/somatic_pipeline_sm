@@ -1,0 +1,18 @@
+title: "MOHCC-WGTS Quality Control Report"
+subtitle: "Batch ID: {{BATCH_ID}}"
+
+report_header_info:
+  - Project: "{{PROJECT_ID}}"
+  - Batch ID: "{{BATCH_ID}}"
+  - Flowcell ID: "{{FLOWCELL_ID}}"
+  - Run Date: "{{RUN_DATE}}"
+  - Report Date: "{{REPORT_DATE}}"
+
+custom_logo: "{{LOGO_PATH}}"
+custom_logo_title: "Marathon of Hope Cancer Centres Network"
+
+custom_css_files:
+  - "{{CSS_PATH}}"
+
+show_analysis_paths: false
+show_analysis_time: false

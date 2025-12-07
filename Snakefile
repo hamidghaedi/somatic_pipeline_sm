@@ -1,6 +1,7 @@
 import os
 import glob
 import csv
+import datetime
 
 # =============================================================================
 # Manifest-driven configuration
@@ -50,6 +51,9 @@ def load_manifest(manifest_csv, batch_id):
                 "library_layout":      row.get("library_layout", ""),
                 "specimen_type":       row.get("specimen_type", ""),
                 "tissue_preservation": row.get("tissue_preservation_method", ""),
+                # optional fields for MultiQC header
+                "flowcell_id":         row.get("flowcell_id", row.get("flowcell", "")),
+                "run_date":            row.get("run_date", row.get("sequencing_run_date", "")),
             }
 
     if not samples:
@@ -72,9 +76,13 @@ if not FASTQ_DIR:
 ROOT = os.path.dirname(FASTQ_DIR)
 
 # =============================================================================
-# Paths and constants (derived from ROOT and your reference scripts)
+# Paths and constants
 # =============================================================================
 
+# Where this workflow (Snakefile + config dir) lives
+WORKFLOW_DIR = workflow.basedir
+
+# I/O layout relative to ROOT (per-batch scratch area)
 MERGED_DIR       = f"{ROOT}/fastq_merged"
 FASTQC_DIR       = f"{ROOT}/fastqc_raw"
 FASTQC_LOGS_DIR  = f"{FASTQC_DIR}/logs"
@@ -83,22 +91,34 @@ FASTP_TRIM_DIR   = f"{FASTP_BASE}/trimmed_fqs"
 FASTP_REPORT_DIR = f"{FASTP_BASE}/reports"
 FASTP_LOG_DIR    = f"{FASTP_BASE}/logs"
 FQ2BAM_BASE      = f"{ROOT}/fq2bam_cpu_outs"
+MULTIQC_OUTDIR   = f"{ROOT}/multiqc_out"
 
-# Container images (SIFs) - exactly as on disk
-FASTQC_SIF    = "/global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/fastqc-0.12.1--hdfd78af_0.sif"
-FASTP_SIF     = "/global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/fastp-1.0.1--heae3180_0.sif"
-BWA_SIF       = "/global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/bwa-0.7.18--h577a1d6_2.sif"
-SAMTOOLS_SIF  = "/global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/samtools-1.22.1--h96c455f_0.sif"
-GATK_SIF      = "/global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/gatk4-4.6.2.0--py310hdfd78af_1.sif"
+# Container images (SIFs)
+CONTAINER_BASE = "/global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR"
+
+FASTQC_SIF   = f"{CONTAINER_BASE}/fastqc-0.12.1--hdfd78af_0.sif"
+FASTP_SIF    = f"{CONTAINER_BASE}/fastp-1.0.1--heae3180_0.sif"
+BWA_SIF      = f"{CONTAINER_BASE}/bwa-0.7.18--h577a1d6_2.sif"
+SAMTOOLS_SIF = f"{CONTAINER_BASE}/samtools-1.22.1--h96c455f_0.sif"
+GATK_SIF     = f"{CONTAINER_BASE}/gatk4-4.6.2.0--py310hdfd78af_1.sif"
+MULTIQC_SIF  = f"{CONTAINER_BASE}/multiqc-1.32--pyhdfd78af_0.sif"
 
 # References
-REF_FASTA         = "/global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa"
-KNOWN_SITES_MILLS = "/global/project/hpcg6049/somatic_pipeline/data/references/Mills.d1vd1.ready.vcf.gz"
-KNOWN_SITES_1KG   = "/global/project/hpcg6049/somatic_pipeline/data/references/1000G.indels.d1vd1.ready.vcf.gz"
-KNOWN_SITES_DBSNP = "/global/project/hpcg6049/somatic_pipeline/data/references/dbSNP.GCF40.d1vd1.ready.vcf.gz"
+REF_BASE = "/global/project/hpcg6049/somatic_pipeline/data/references"
 
-# For bwa mem we follow your fq2bam CPU script: use the FASTA path as the BWA reference
-BWA_REF = REF_FASTA
+REF_FASTA         = f"{REF_BASE}/GRCh38.d1.vd1.fa"
+KNOWN_SITES_MILLS = f"{REF_BASE}/Mills.d1vd1.ready.vcf.gz"
+KNOWN_SITES_1KG   = f"{REF_BASE}/1000G.indels.d1vd1.ready.vcf.gz"
+KNOWN_SITES_DBSNP = f"{REF_BASE}/dbSNP.GCF40.d1vd1.ready.vcf.gz"
+
+# MultiQC assets in the workflow repo
+BASE_MULTIQC_CONFIG_TEMPLATE = f"{WORKFLOW_DIR}/config/multiqc_config.base.yaml"
+LOGO_PATH = f"{WORKFLOW_DIR}/config/mohcc_logo_tiny.jpg"
+CSS_PATH  = f"{WORKFLOW_DIR}/config/mohcc_multiqc.css"
+
+# Batch-specific MultiQC config and report paths
+MULTIQC_BATCH_CONFIG = f"{MULTIQC_OUTDIR}/multiqc_{TARGET_BATCH_ID}.yaml"
+MULTIQC_REPORT       = f"{MULTIQC_OUTDIR}/{TARGET_BATCH_ID}_multiqc_report.html"
 
 READS = ["R1", "R2"]
 
@@ -184,13 +204,65 @@ ALIGN_RUNTIME_MIN = {
     for sample in SAMPLES
 }
 
+# -------------------------------------------------------------------------
+# Helper: write a batch-specific MultiQC config YAML
+# -------------------------------------------------------------------------
+
+import yaml  # requires PyYAML (comes with snakemake env)
+
+def write_multiqc_config(out_path):
+    """
+    Create a batch-specific MultiQC config based on a base template
+    and manifest metadata.
+    """
+    # Use the first sample as representative for batch-level fields
+    info0 = next(iter(MANIFEST_SAMPLES.values()))
+
+    project_id = info0.get("project_id") or "UNKNOWN"
+    batch_id   = info0.get("batch_id") or TARGET_BATCH_ID
+    flowcell   = info0.get("flowcell_id") or "UNKNOWN"
+    run_date   = info0.get("run_date") or "UNKNOWN"
+    report_date = datetime.date.today().isoformat()
+
+    # Load the base config (if missing, raise a clear error)
+    if not os.path.exists(BASE_MULTIQC_CONFIG_TEMPLATE):
+        raise FileNotFoundError(
+            f"Base MultiQC config not found at {BASE_MULTIQC_CONFIG_TEMPLATE}"
+        )
+
+    with open(BASE_MULTIQC_CONFIG_TEMPLATE) as f:
+        cfg = yaml.safe_load(f) or {}
+
+    # Override / inject the dynamic bits
+    cfg.setdefault("title", "MOHCC-WGTS Quality Control Report")
+    cfg["subtitle"] = f"Batch ID: {batch_id}"
+
+    cfg["report_header_info"] = [
+        {"Project": project_id},
+        {"Batch ID": batch_id},
+        {"Flowcell ID": flowcell},
+        {"Run Date": run_date},
+        {"Report Date": report_date},
+    ]
+
+    cfg["custom_logo"] = LOGO_PATH
+    cfg.setdefault("custom_logo_title", "Marathon of Hope Cancer Centres Network")
+    cfg["custom_css_files"] = [CSS_PATH]
+
+    # Ensure output dir exists
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+    with open(out_path, "w") as out_f:
+        yaml.safe_dump(cfg, out_f, sort_keys=False)
+
+
 # =============================================================================
 # rule all
 # =============================================================================
 
 rule all:
     input:
-        # merged raw FASTQs
+        # merged raw FASTQs (temp, but still part of DAG)
         expand(f"{MERGED_DIR}/{{sample}}_R1.fastq.gz", sample=SAMPLES),
         expand(f"{MERGED_DIR}/{{sample}}_R2.fastq.gz", sample=SAMPLES),
 
@@ -210,7 +282,10 @@ rule all:
 
         # QC metrics
         expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam.flagstat", sample=SAMPLES),
-        expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.wgs_metrics.txt", sample=SAMPLES)
+        expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.wgs_metrics.txt", sample=SAMPLES),
+
+        # MultiQC report
+        MULTIQC_REPORT
 
 # =============================================================================
 # Pre-processing (merge lanes, FastQC, fastp)
@@ -221,8 +296,8 @@ rule merge_lanes:
         R1 = r1_lanes_for_sample,
         R2 = r2_lanes_for_sample
     output:
-        R1 = f"{MERGED_DIR}/{{sample}}_R1.fastq.gz",
-        R2 = f"{MERGED_DIR}/{{sample}}_R2.fastq.gz"
+        R1 = temp(f"{MERGED_DIR}/{{sample}}_R1.fastq.gz"),
+        R2 = temp(f"{MERGED_DIR}/{{sample}}_R2.fastq.gz")
     threads: 2
     resources:
         mem_mb = 4000
@@ -328,14 +403,14 @@ rule align_bwa_mem:
         r1 = lambda w: f"{FASTP_TRIM_DIR}/{w.sample}.trimmed_1.fastq.gz",
         r2 = lambda w: f"{FASTP_TRIM_DIR}/{w.sample}.trimmed_2.fastq.gz"
     output:
-        sorted_bam = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.sorted.bam"
+        sorted_bam = temp(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.sorted.bam")
     log:
         f"{FQ2BAM_BASE}/{{sample}}/logs/align.log"
     params:
         sif_bwa = BWA_SIF,
         sif_sam = SAMTOOLS_SIF,
-        ref     = BWA_REF,
-        rg      = r"@RG\tID:{sample}\tLB:{sample}\tPL:ILLUMINA\tSM:{sample}\tPU:{sample}"
+        ref     = REF_FASTA,
+        rg      = lambda w: f"@RG\\tID:{w.sample}\\tLB:{w.sample}\\tPL:ILLUMINA\\tSM:{w.sample}\\tPU:{w.sample}"
     threads: 32
     resources:
         mem_mb  = 180000,
@@ -391,7 +466,7 @@ rule mark_duplicates:
     input:
         sorted_bam = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.sorted.bam"
     output:
-        dedup_bam = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam",
+        dedup_bam = temp(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam"),
         metrics   = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup_metrics.txt"
     log:
         f"{FQ2BAM_BASE}/{{sample}}/logs/markdup.log"
@@ -602,4 +677,83 @@ rule collect_wgs_metrics:
             -O {output.metrics} \
             -R {params.ref} \
           > {log} 2>&1
+        """
+
+# =============================================================================
+# MultiQC: config + report
+# =============================================================================
+
+rule multiqc_config:
+    output:
+        MULTIQC_BATCH_CONFIG
+    run:
+        write_multiqc_config(output[0])
+
+
+rule multiqc:
+    input:
+        expand(f"{FASTP_REPORT_DIR}/{{sample}}.fastp.json", sample=SAMPLES),
+        expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam.flagstat", sample=SAMPLES),
+        expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.wgs_metrics.txt", sample=SAMPLES),
+        MULTIQC_BATCH_CONFIG
+    output:
+        html = MULTIQC_REPORT
+    log:
+        f"{MULTIQC_OUTDIR}/multiqc.log"
+    params:
+        sif         = MULTIQC_SIF,
+        fastp_dir   = FASTP_BASE,
+        align_dir   = FQ2BAM_BASE,
+        outdir      = MULTIQC_OUTDIR,
+        batch_name  = TARGET_BATCH_ID,
+        config      = MULTIQC_BATCH_CONFIG,
+        # MultiQC: -n <name> -> <name>.html and <name>_data/
+        report_name = f"{TARGET_BATCH_ID}_multiqc_report",
+        data_dir    = f"{MULTIQC_OUTDIR}/{TARGET_BATCH_ID}_multiqc_report_data"
+    threads: 2
+    resources:
+        mem_mb  = 16000,
+        runtime = 60
+    message:
+        "Running MultiQC for batch {params.batch_name}"
+    shell:
+        r"""
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "{params.outdir}"
+
+        echo "--- MultiQC configuration ---" > {log}
+        echo "Container: {params.sif}"       >> {log}
+        echo "FASTP Dir: {params.fastp_dir}" >> {log}
+        echo "Align Dir: {params.align_dir}" >> {log}
+        echo "Config:    {params.config}"    >> {log}
+        echo "Report:    {output.html}"      >> {log}
+        echo ""                              >> {log}
+
+        # Clean any previous report so MultiQC doesn't create *_1.html
+        rm -f  "{output.html}"
+        rm -rf "{params.data_dir}"
+
+        apptainer exec \
+          --bind /global/project,/global/scratch \
+          {params.sif} \
+          multiqc \
+            -f \
+            -n "{params.report_name}" \
+            -o "{params.outdir}" \
+            -c "{params.config}" \
+            "{params.fastp_dir}" \
+            "{params.align_dir}" \
+          >> {log} 2>&1
+
+        # Sanity check: MultiQC must produce the expected HTML
+        if [[ ! -f "{output.html}" ]]; then
+          echo "ERROR: MultiQC did not produce expected HTML: {output.html}" >> {log}
+          exit 1
+        fi
+
+        echo "MultiQC completed successfully for batch {params.batch_name}" >> {log}
         """

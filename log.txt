@@ -1,0 +1,841 @@
+host: frnt148.frontenac.local
+Building DAG of jobs...
+You are running snakemake in a SLURM job context. This is not recommended, as it may lead to unexpected behavior. Please run Snakemake directly on the login node.
+SLURM run ID: 8529731b-195f-4067-9903-2bd06c6697df
+Using shell: /cvmfs/soft.computecanada.ca/gentoo/2023/x86-64-v3/usr/bin/bash
+Provided remote nodes: 50
+Job stats:
+job                    count
+-------------------  -------
+align_bwa_mem              2
+all                        1
+apply_bqsr                 2
+bqsr_recal_table           2
+collect_wgs_metrics        2
+fastp_sample               2
+fastqc_raw                 4
+index_dedup                2
+mark_duplicates            2
+merge_lanes                2
+multiqc                    1
+multiqc_config             1
+samtools_flagstat          2
+total                     25
+
+Select jobs to execute...
+Failed to solve scheduling problem with ILP solver, falling back to greedy scheduler. You likely have to fix your ILP solver installation. Error message: PULP_CBC_CMD: Not Available (check permissions on cbc)
+Execute 3 jobs...
+[Sun Dec  7 13:12:19 2025]
+rule multiqc_config:
+    output: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml
+    jobid: 24
+    reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml
+    resources: mem_mb=4000, mem_mib=3815, disk_mb=50000, disk_mib=47684, tmpdir=<TBD>, runtime=60
+Shell command: None
+No SLURM account given, trying to guess.
+Unable to guess SLURM account. Trying to proceed without.
+No partition was given for rule 'multiqc_config', and unable to find a default partition. Trying to submit without partition information. You may want to invoke snakemake with --default-resources 'slurm_partition=<your default partition>'.
+Job 24 has been submitted with SLURM jobid 928001 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_multiqc_config/928001.log).
+[Sun Dec  7 13:12:19 2025]
+Job 1: Merging lanes for sample donorN_normal_test
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R2.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R1.fastq.gz
+Shell command: 
+        set -euo pipefail
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged"
+
+        # R1
+        cat /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_normal_test_S7_L001_R1_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_normal_test_S7_L002_R1_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_normal_test_S7_L003_R1_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_normal_test_S7_L004_R1_001.fastq.gz > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R1.fastq.gz
+
+        # R2
+        cat /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_normal_test_S7_L001_R2_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_normal_test_S7_L002_R2_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_normal_test_S7_L003_R2_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_normal_test_S7_L004_R2_001.fastq.gz > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R2.fastq.gz
+        
+Job 1 has been submitted with SLURM jobid 928002 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_merge_lanes/donorN_normal_test/928002.log).
+[Sun Dec  7 13:12:20 2025]
+Job 2: Merging lanes for sample donorN_tumor_test
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R1.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R2.fastq.gz
+Shell command: 
+        set -euo pipefail
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged"
+
+        # R1
+        cat /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_tumor_test_S3_L001_R1_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_tumor_test_S3_L002_R1_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_tumor_test_S3_L003_R1_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_tumor_test_S3_L004_R1_001.fastq.gz > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R1.fastq.gz
+
+        # R2
+        cat /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_tumor_test_S3_L001_R2_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_tumor_test_S3_L002_R2_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_tumor_test_S3_L003_R2_001.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq/donorN_tumor_test_S3_L004_R2_001.fastq.gz > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R2.fastq.gz
+        
+Job 2 has been submitted with SLURM jobid 928003 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_merge_lanes/donorN_tumor_test/928003.log).
+[Sun Dec  7 13:12:54 2025]
+Finished jobid: 24 (Rule: multiqc_config)
+1 of 25 steps (4%) done
+[Sun Dec  7 13:12:54 2025]
+Finished jobid: 1 (Rule: merge_lanes)
+2 of 25 steps (8%) done
+Select jobs to execute...
+Execute 3 jobs...
+[Sun Dec  7 13:12:54 2025]
+Job 4: Running FastQC on /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R2.fastq.gz
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/donorN_normal_test_R2_fastqc.zip, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/donorN_normal_test_R2_fastqc.html; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R2.fastq.gz
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw"
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/logs"
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/fastqc-0.12.1--hdfd78af_0.sif \
+          fastqc \
+            --threads 8 \
+            --outdir /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw \
+            --nogroup \
+            /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R2.fastq.gz \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/logs/donorN_normal_test_R2.fastqc.log 2>&1
+        
+Job 4 has been submitted with SLURM jobid 928004 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_fastqc_raw/donorN_normal_test_R2/928004.log).
+[Sun Dec  7 13:12:54 2025]
+Job 7: Running fastp on merged FASTQs for sample donorN_normal_test
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_normal_test.trimmed_1.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_normal_test.trimmed_2.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_normal_test.fastp.json; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R2.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R1.fastq.gz
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs"
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports"
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/logs"
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/fastp-1.0.1--heae3180_0.sif \
+          fastp \
+            --in1 /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R1.fastq.gz \
+            --in2 /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R2.fastq.gz \
+            --out1 /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_normal_test.trimmed_1.fastq.gz \
+            --out2 /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_normal_test.trimmed_2.fastq.gz \
+            --json /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_normal_test.fastp.json \
+            --html /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_normal_test.fastp.html \
+            --thread 16 \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/logs/donorN_normal_test.fastp.log 2>&1
+        
+Job 7 has been submitted with SLURM jobid 928005 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_fastp_sample/donorN_normal_test/928005.log).
+[Sun Dec  7 13:12:54 2025]
+Job 3: Running FastQC on /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R1.fastq.gz
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/donorN_normal_test_R1_fastqc.zip, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/donorN_normal_test_R1_fastqc.html; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R1.fastq.gz
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw"
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/logs"
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/fastqc-0.12.1--hdfd78af_0.sif \
+          fastqc \
+            --threads 8 \
+            --outdir /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw \
+            --nogroup \
+            /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_normal_test_R1.fastq.gz \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/logs/donorN_normal_test_R1.fastqc.log 2>&1
+        
+Job 3 has been submitted with SLURM jobid 928006 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_fastqc_raw/donorN_normal_test_R1/928006.log).
+[Sun Dec  7 13:12:54 2025]
+Finished jobid: 2 (Rule: merge_lanes)
+3 of 25 steps (12%) done
+Select jobs to execute...
+Execute 3 jobs...
+[Sun Dec  7 13:12:54 2025]
+Job 5: Running FastQC on /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R1.fastq.gz
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/donorN_tumor_test_R1_fastqc.html, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/donorN_tumor_test_R1_fastqc.zip; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R1.fastq.gz
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw"
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/logs"
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/fastqc-0.12.1--hdfd78af_0.sif \
+          fastqc \
+            --threads 8 \
+            --outdir /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw \
+            --nogroup \
+            /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R1.fastq.gz \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/logs/donorN_tumor_test_R1.fastqc.log 2>&1
+        
+Job 5 has been submitted with SLURM jobid 928007 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_fastqc_raw/donorN_tumor_test_R1/928007.log).
+[Sun Dec  7 13:12:55 2025]
+Job 6: Running FastQC on /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R2.fastq.gz
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/donorN_tumor_test_R2_fastqc.html, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/donorN_tumor_test_R2_fastqc.zip; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R2.fastq.gz
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw"
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/logs"
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/fastqc-0.12.1--hdfd78af_0.sif \
+          fastqc \
+            --threads 8 \
+            --outdir /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw \
+            --nogroup \
+            /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R2.fastq.gz \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastqc_raw/logs/donorN_tumor_test_R2.fastqc.log 2>&1
+        
+Job 6 has been submitted with SLURM jobid 928008 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_fastqc_raw/donorN_tumor_test_R2/928008.log).
+[Sun Dec  7 13:12:55 2025]
+Job 8: Running fastp on merged FASTQs for sample donorN_tumor_test
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_tumor_test.trimmed_2.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_tumor_test.trimmed_1.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_tumor_test.fastp.json; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R1.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R2.fastq.gz
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs"
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports"
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/logs"
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/fastp-1.0.1--heae3180_0.sif \
+          fastp \
+            --in1 /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R1.fastq.gz \
+            --in2 /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastq_merged/donorN_tumor_test_R2.fastq.gz \
+            --out1 /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_tumor_test.trimmed_1.fastq.gz \
+            --out2 /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_tumor_test.trimmed_2.fastq.gz \
+            --json /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_tumor_test.fastp.json \
+            --html /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_tumor_test.fastp.html \
+            --thread 16 \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/logs/donorN_tumor_test.fastp.log 2>&1
+        
+Job 8 has been submitted with SLURM jobid 928009 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_fastp_sample/donorN_tumor_test/928009.log).
+[Sun Dec  7 13:13:34 2025]
+Finished jobid: 4 (Rule: fastqc_raw)
+4 of 25 steps (16%) done
+[Sun Dec  7 13:13:34 2025]
+Finished jobid: 7 (Rule: fastp_sample)
+5 of 25 steps (20%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:13:34 2025]
+Job 11: Aligning donorN_normal_test with BWA-MEM and sorting with samtools
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.sorted.bam; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_normal_test.trimmed_1.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_normal_test.trimmed_2.fastq.gz
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "$(dirname /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.sorted.bam)"
+        mkdir -p "$(dirname /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log)"
+
+        echo "--- Starting BWA MEM Alignment ---" > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log
+        echo "BWA Container: /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/bwa-0.7.18--h577a1d6_2.sif" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log
+        echo "Reference: /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log
+        echo "Requested runtime (minutes): 720" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log
+
+        # Fail fast if BWA index is missing
+        if ! ls /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa.bwt >/dev/null 2>&1; then
+             echo "ERROR: BWA index not found: /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa.bwt" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log
+             exit 1
+        fi
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/bwa-0.7.18--h577a1d6_2.sif \
+            bwa mem \
+              -t 32 \
+              -Y \
+              -R '@RG\tID:donorN_normal_test\tLB:donorN_normal_test\tPL:ILLUMINA\tSM:donorN_normal_test\tPU:donorN_normal_test' \
+              /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa \
+              /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_normal_test.trimmed_1.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_normal_test.trimmed_2.fastq.gz \
+              2>> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log \
+        | apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/samtools-1.22.1--h96c455f_0.sif \
+            samtools sort \
+              -@ 32 \
+              -o /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.sorted.bam \
+              - \
+              2>> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log
+
+        if [[ ! -s /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.sorted.bam ]]; then
+            echo "ERROR: Output BAM is missing or empty." >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log
+            exit 1
+        fi
+
+        echo "Alignment completed successfully." >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/align.log
+        
+Job 11 has been submitted with SLURM jobid 928010 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_align_bwa_mem/donorN_normal_test/928010.log).
+[Sun Dec  7 13:13:34 2025]
+Finished jobid: 3 (Rule: fastqc_raw)
+6 of 25 steps (24%) done
+[Sun Dec  7 13:13:34 2025]
+Finished jobid: 5 (Rule: fastqc_raw)
+7 of 25 steps (28%) done
+[Sun Dec  7 13:13:35 2025]
+Finished jobid: 6 (Rule: fastqc_raw)
+8 of 25 steps (32%) done
+[Sun Dec  7 13:13:35 2025]
+Finished jobid: 8 (Rule: fastp_sample)
+9 of 25 steps (36%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:13:35 2025]
+Job 16: Aligning donorN_tumor_test with BWA-MEM and sorting with samtools
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.sorted.bam; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_tumor_test.trimmed_2.fastq.gz, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_tumor_test.trimmed_1.fastq.gz
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "$(dirname /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.sorted.bam)"
+        mkdir -p "$(dirname /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log)"
+
+        echo "--- Starting BWA MEM Alignment ---" > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log
+        echo "BWA Container: /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/bwa-0.7.18--h577a1d6_2.sif" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log
+        echo "Reference: /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log
+        echo "Requested runtime (minutes): 720" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log
+
+        # Fail fast if BWA index is missing
+        if ! ls /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa.bwt >/dev/null 2>&1; then
+             echo "ERROR: BWA index not found: /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa.bwt" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log
+             exit 1
+        fi
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/bwa-0.7.18--h577a1d6_2.sif \
+            bwa mem \
+              -t 32 \
+              -Y \
+              -R '@RG\tID:donorN_tumor_test\tLB:donorN_tumor_test\tPL:ILLUMINA\tSM:donorN_tumor_test\tPU:donorN_tumor_test' \
+              /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa \
+              /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_tumor_test.trimmed_1.fastq.gz /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/trimmed_fqs/donorN_tumor_test.trimmed_2.fastq.gz \
+              2>> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log \
+        | apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/samtools-1.22.1--h96c455f_0.sif \
+            samtools sort \
+              -@ 32 \
+              -o /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.sorted.bam \
+              - \
+              2>> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log
+
+        if [[ ! -s /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.sorted.bam ]]; then
+            echo "ERROR: Output BAM is missing or empty." >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log
+            exit 1
+        fi
+
+        echo "Alignment completed successfully." >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/align.log
+        
+Job 16 has been submitted with SLURM jobid 928011 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_align_bwa_mem/donorN_tumor_test/928011.log).
+[Sun Dec  7 13:14:14 2025]
+Finished jobid: 11 (Rule: align_bwa_mem)
+10 of 25 steps (40%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:14:14 2025]
+Job 10: Marking duplicates for donorN_normal_test with GATK MarkDuplicates
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.sorted.bam
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "$(dirname /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam)"
+        mkdir -p "$(dirname /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/markdup.log)"
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/gatk4-4.6.2.0--py310hdfd78af_1.sif \
+          gatk MarkDuplicates \
+            --java-options "-Xmx56g" \
+            -I /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.sorted.bam \
+            -O /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam \
+            -M /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup_metrics.txt \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/markdup.log 2>&1
+        
+Job 10 has been submitted with SLURM jobid 928012 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_mark_duplicates/donorN_normal_test/928012.log).
+[Sun Dec  7 13:14:14 2025]
+Finished jobid: 16 (Rule: align_bwa_mem)
+11 of 25 steps (44%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:14:14 2025]
+Job 15: Marking duplicates for donorN_tumor_test with GATK MarkDuplicates
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.sorted.bam
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "$(dirname /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam)"
+        mkdir -p "$(dirname /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/markdup.log)"
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/gatk4-4.6.2.0--py310hdfd78af_1.sif \
+          gatk MarkDuplicates \
+            --java-options "-Xmx56g" \
+            -I /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.sorted.bam \
+            -O /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam \
+            -M /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup_metrics.txt \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/markdup.log 2>&1
+        
+Job 15 has been submitted with SLURM jobid 928013 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_mark_duplicates/donorN_tumor_test/928013.log).
+[Sun Dec  7 13:15:45 2025]
+Finished jobid: 10 (Rule: mark_duplicates)
+12 of 25 steps (48%) done
+Removing temporary output /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.sorted.bam.
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:15:45 2025]
+Job 13: Indexing deduplicated BAM for donorN_normal_test
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.bai; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/samtools-1.22.1--h96c455f_0.sif \
+          samtools index /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/index_dedup.log 2>&1
+        
+Job 13 has been submitted with SLURM jobid 928014 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_index_dedup/donorN_normal_test/928014.log).
+[Sun Dec  7 13:15:45 2025]
+Finished jobid: 15 (Rule: mark_duplicates)
+13 of 25 steps (52%) done
+Removing temporary output /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.sorted.bam.
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:15:45 2025]
+Job 18: Indexing deduplicated BAM for donorN_tumor_test
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.bai; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/samtools-1.22.1--h96c455f_0.sif \
+          samtools index /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/index_dedup.log 2>&1
+        
+Job 18 has been submitted with SLURM jobid 928015 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_index_dedup/donorN_tumor_test/928015.log).
+[Sun Dec  7 13:16:25 2025]
+Finished jobid: 13 (Rule: index_dedup)
+14 of 25 steps (56%) done
+Select jobs to execute...
+Execute 3 jobs...
+[Sun Dec  7 13:16:25 2025]
+Job 19: Running samtools flagstat on donorN_normal_test.dedup.bam
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.flagstat; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.bai, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/samtools-1.22.1--h96c455f_0.sif \
+          samtools flagstat /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.flagstat 2> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/flagstat.log
+        
+Job 19 has been submitted with SLURM jobid 928016 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_samtools_flagstat/donorN_normal_test/928016.log).
+[Sun Dec  7 13:16:25 2025]
+Job 12: Running GATK BaseRecalibrator for donorN_normal_test
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.recal_table.txt; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.bai, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/gatk4-4.6.2.0--py310hdfd78af_1.sif \
+          gatk BaseRecalibrator \
+            --java-options "-Xmx56g" \
+            -R /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa \
+            -I /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam \
+            --known-sites /global/project/hpcg6049/somatic_pipeline/data/references/Mills.d1vd1.ready.vcf.gz \
+            --known-sites /global/project/hpcg6049/somatic_pipeline/data/references/1000G.indels.d1vd1.ready.vcf.gz \
+            --known-sites /global/project/hpcg6049/somatic_pipeline/data/references/dbSNP.GCF40.d1vd1.ready.vcf.gz \
+            -O /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.recal_table.txt \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/bqsr_recal.log 2>&1
+        
+Job 12 has been submitted with SLURM jobid 928017 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_bqsr_recal_table/donorN_normal_test/928017.log).
+[Sun Dec  7 13:16:25 2025]
+Job 21: Collecting WGS metrics for donorN_normal_test.dedup.bam
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.wgs_metrics.txt; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.bai, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/gatk4-4.6.2.0--py310hdfd78af_1.sif \
+          gatk CollectWgsMetrics \
+            --java-options "-Xmx56g" \
+            -I /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam \
+            -O /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.wgs_metrics.txt \
+            -R /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/wgs_metrics.log 2>&1
+        
+Job 21 has been submitted with SLURM jobid 928018 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_collect_wgs_metrics/donorN_normal_test/928018.log).
+[Sun Dec  7 13:16:25 2025]
+Finished jobid: 18 (Rule: index_dedup)
+15 of 25 steps (60%) done
+Select jobs to execute...
+Execute 3 jobs...
+[Sun Dec  7 13:16:25 2025]
+Job 20: Running samtools flagstat on donorN_tumor_test.dedup.bam
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.flagstat; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.bai
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/samtools-1.22.1--h96c455f_0.sif \
+          samtools flagstat /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.flagstat 2> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/flagstat.log
+        
+Job 20 has been submitted with SLURM jobid 928019 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_samtools_flagstat/donorN_tumor_test/928019.log).
+[Sun Dec  7 13:16:25 2025]
+Job 22: Collecting WGS metrics for donorN_tumor_test.dedup.bam
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.wgs_metrics.txt; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.bai
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/gatk4-4.6.2.0--py310hdfd78af_1.sif \
+          gatk CollectWgsMetrics \
+            --java-options "-Xmx56g" \
+            -I /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam \
+            -O /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.wgs_metrics.txt \
+            -R /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/wgs_metrics.log 2>&1
+        
+Job 22 has been submitted with SLURM jobid 928020 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_collect_wgs_metrics/donorN_tumor_test/928020.log).
+[Sun Dec  7 13:16:25 2025]
+Job 17: Running GATK BaseRecalibrator for donorN_tumor_test
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.recal_table.txt; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.bai
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/gatk4-4.6.2.0--py310hdfd78af_1.sif \
+          gatk BaseRecalibrator \
+            --java-options "-Xmx56g" \
+            -R /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa \
+            -I /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam \
+            --known-sites /global/project/hpcg6049/somatic_pipeline/data/references/Mills.d1vd1.ready.vcf.gz \
+            --known-sites /global/project/hpcg6049/somatic_pipeline/data/references/1000G.indels.d1vd1.ready.vcf.gz \
+            --known-sites /global/project/hpcg6049/somatic_pipeline/data/references/dbSNP.GCF40.d1vd1.ready.vcf.gz \
+            -O /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.recal_table.txt \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/bqsr_recal.log 2>&1
+        
+Job 17 has been submitted with SLURM jobid 928021 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_bqsr_recal_table/donorN_tumor_test/928021.log).
+[Sun Dec  7 13:17:05 2025]
+Finished jobid: 19 (Rule: samtools_flagstat)
+16 of 25 steps (64%) done
+[Sun Dec  7 13:17:05 2025]
+Finished jobid: 20 (Rule: samtools_flagstat)
+17 of 25 steps (68%) done
+[Sun Dec  7 13:17:45 2025]
+Finished jobid: 12 (Rule: bqsr_recal_table)
+18 of 25 steps (72%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:17:45 2025]
+Job 9: Applying BQSR to donorN_normal_test and producing analysis-ready BAM
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.analysis_ready.bam, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.analysis_ready.bam.bai; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.recal_table.txt, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.bai, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/gatk4-4.6.2.0--py310hdfd78af_1.sif \
+          gatk ApplyBQSR \
+            --java-options "-Xmx56g" \
+            -R /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa \
+            -I /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam \
+            --bqsr-recal-file /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.recal_table.txt \
+            -O /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.analysis_ready.bam \
+            --create-output-bam-index true \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/logs/apply_bqsr.log 2>&1
+
+        # Ensure index exists at expected path
+        if [[ ! -s /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.analysis_ready.bam.bai ]]; then
+          apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/samtools-1.22.1--h96c455f_0.sif \
+            samtools index /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.analysis_ready.bam
+        fi
+        
+Job 9 has been submitted with SLURM jobid 928022 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_apply_bqsr/donorN_normal_test/928022.log).
+[Sun Dec  7 13:17:45 2025]
+Finished jobid: 17 (Rule: bqsr_recal_table)
+19 of 25 steps (76%) done
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:17:45 2025]
+Job 14: Applying BQSR to donorN_tumor_test and producing analysis-ready BAM
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.analysis_ready.bam.bai, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.analysis_ready.bam; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.bai, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.recal_table.txt
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/gatk4-4.6.2.0--py310hdfd78af_1.sif \
+          gatk ApplyBQSR \
+            --java-options "-Xmx56g" \
+            -R /global/project/hpcg6049/somatic_pipeline/data/references/GRCh38.d1.vd1.fa \
+            -I /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam \
+            --bqsr-recal-file /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.recal_table.txt \
+            -O /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.analysis_ready.bam \
+            --create-output-bam-index true \
+          > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/logs/apply_bqsr.log 2>&1
+
+        # Ensure index exists at expected path
+        if [[ ! -s /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.analysis_ready.bam.bai ]]; then
+          apptainer exec --bind /global/project,/global/scratch /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/samtools-1.22.1--h96c455f_0.sif \
+            samtools index /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.analysis_ready.bam
+        fi
+        
+Job 14 has been submitted with SLURM jobid 928023 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_apply_bqsr/donorN_tumor_test/928023.log).
+[Sun Dec  7 13:18:25 2025]
+Finished jobid: 9 (Rule: apply_bqsr)
+20 of 25 steps (80%) done
+[Sun Dec  7 13:18:25 2025]
+Finished jobid: 14 (Rule: apply_bqsr)
+21 of 25 steps (84%) done
+[Sun Dec  7 13:20:55 2025]
+Finished jobid: 21 (Rule: collect_wgs_metrics)
+22 of 25 steps (88%) done
+Removing temporary output /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.
+[Sun Dec  7 13:20:55 2025]
+Finished jobid: 22 (Rule: collect_wgs_metrics)
+23 of 25 steps (92%) done
+Removing temporary output /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:20:55 2025]
+Job 23: Running MultiQC for batch TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_normal_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.wgs_metrics.txt, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_tumor_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.wgs_metrics.txt
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out"
+
+        echo "--- MultiQC configuration ---" > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Container: /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "FASTP Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Align Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Config:    /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+
+        apptainer exec \
+          --bind /global/project,/global/scratch \
+          /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif \
+          multiqc \
+            -n "TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" \
+            -o "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out" \
+            -c "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" \
+          >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log 2>&1
+
+        # MultiQC usually writes something like "<batch_name>_multiqc_report.html".
+        # Normalize to the expected output path for Snakemake.
+        REAL_HTML=$(ls /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN*report.html | head -n 1 || true)
+        if [[ -z "$REAL_HTML" ]]; then
+          echo "ERROR: Could not find MultiQC HTML report for batch TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+          exit 1
+        fi
+
+        cp "$REAL_HTML" /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html
+        
+Job 23 has been submitted with SLURM jobid 928024 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_multiqc/928024.log).
+[Sun Dec  7 13:21:35 2025]
+Error in rule multiqc:
+    message: SLURM-job '928024' failed, SLURM status is: 'FAILED'. For further error details see the cluster/cloud log and the log files of the involved rule(s).
+    jobid: 23
+    input: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_normal_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_tumor_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.wgs_metrics.txt, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.wgs_metrics.txt, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml
+    output: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html
+    log: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log, /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_multiqc/928024.log (check log file(s) for error details)
+    shell:
+        
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out"
+
+        echo "--- MultiQC configuration ---" > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Container: /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "FASTP Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Align Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Config:    /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+
+        apptainer exec \
+          --bind /global/project,/global/scratch \
+          /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif \
+          multiqc \
+            -n "TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" \
+            -o "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out" \
+            -c "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" \
+          >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log 2>&1
+
+        # MultiQC usually writes something like "<batch_name>_multiqc_report.html".
+        # Normalize to the expected output path for Snakemake.
+        REAL_HTML=$(ls /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN*report.html | head -n 1 || true)
+        if [[ -z "$REAL_HTML" ]]; then
+          echo "ERROR: Could not find MultiQC HTML report for batch TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+          exit 1
+        fi
+
+        cp "$REAL_HTML" /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html
+        
+        (command exited with non-zero exit code)
+    external_jobid: 928024
+Trying to restart job 23.
+Select jobs to execute...
+Execute 1 jobs...
+[Sun Dec  7 13:21:35 2025]
+Job 23: Running MultiQC for batch TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN
+Reason: Missing output files: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html; Input files updated by another job: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_normal_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.wgs_metrics.txt, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_tumor_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.wgs_metrics.txt
+Shell command: 
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out"
+
+        echo "--- MultiQC configuration ---" > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Container: /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "FASTP Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Align Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Config:    /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+
+        apptainer exec \
+          --bind /global/project,/global/scratch \
+          /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif \
+          multiqc \
+            -n "TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" \
+            -o "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out" \
+            -c "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" \
+          >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log 2>&1
+
+        # MultiQC usually writes something like "<batch_name>_multiqc_report.html".
+        # Normalize to the expected output path for Snakemake.
+        REAL_HTML=$(ls /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN*report.html | head -n 1 || true)
+        if [[ -z "$REAL_HTML" ]]; then
+          echo "ERROR: Could not find MultiQC HTML report for batch TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+          exit 1
+        fi
+
+        cp "$REAL_HTML" /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html
+        
+Job 23 has been submitted with SLURM jobid 928025 (log: /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_multiqc/928025.log).
+[Sun Dec  7 13:22:25 2025]
+Error in rule multiqc:
+    message: SLURM-job '928025' failed, SLURM status is: 'FAILED'. For further error details see the cluster/cloud log and the log files of the involved rule(s).
+    jobid: 23
+    input: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_normal_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_tumor_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.wgs_metrics.txt, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.wgs_metrics.txt, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml
+    output: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html
+    log: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log, /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/slurm_logs/rule_multiqc/928025.log (check log file(s) for error details)
+    shell:
+        
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out"
+
+        echo "--- MultiQC configuration ---" > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Container: /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "FASTP Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Align Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Config:    /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+
+        apptainer exec \
+          --bind /global/project,/global/scratch \
+          /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif \
+          multiqc \
+            -n "TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" \
+            -o "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out" \
+            -c "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" \
+          >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log 2>&1
+
+        # MultiQC usually writes something like "<batch_name>_multiqc_report.html".
+        # Normalize to the expected output path for Snakemake.
+        REAL_HTML=$(ls /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN*report.html | head -n 1 || true)
+        if [[ -z "$REAL_HTML" ]]; then
+          echo "ERROR: Could not find MultiQC HTML report for batch TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+          exit 1
+        fi
+
+        cp "$REAL_HTML" /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html
+        
+        (command exited with non-zero exit code)
+    external_jobid: 928025
+Cleaning up log files older than 10 day(s).
+Exiting because a job execution failed. Look below for error messages
+[Sun Dec  7 13:23:25 2025]
+Error in rule multiqc:
+    message: None
+    jobid: 23
+    input: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_normal_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs/reports/donorN_tumor_test.fastp.json, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.dedup.bam.flagstat, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_normal_test/donorN_normal_test.wgs_metrics.txt, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs/donorN_tumor_test/donorN_tumor_test.wgs_metrics.txt, /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml
+    output: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html
+    log: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log (check log file(s) for error details)
+    shell:
+        
+        set -euo pipefail
+        module --force purge
+        module load StdEnv/2023
+        module load apptainer
+
+        mkdir -p "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out"
+
+        echo "--- MultiQC configuration ---" > /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Container: /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "FASTP Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Align Dir: /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+        echo "Config:    /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+
+        apptainer exec \
+          --bind /global/project,/global/scratch \
+          /global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR/multiqc-1.32--pyhdfd78af_0.sif \
+          multiqc \
+            -n "TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" \
+            -o "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out" \
+            -c "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc_TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN.yaml" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fastp_outs" \
+            "/global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/fq2bam_cpu_outs" \
+          >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log 2>&1
+
+        # MultiQC usually writes something like "<batch_name>_multiqc_report.html".
+        # Normalize to the expected output path for Snakemake.
+        REAL_HTML=$(ls /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN*report.html | head -n 1 || true)
+        if [[ -z "$REAL_HTML" ]]; then
+          echo "ERROR: Could not find MultiQC HTML report for batch TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN" >> /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/multiqc.log
+          exit 1
+        fi
+
+        cp "$REAL_HTML" /global/scratch/hpc6049/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN/multiqc_out/TEST_DNA-RUN1_2025-11-16_NNNNNNNNNN_multiqc_report.html
+        
+        (command exited with non-zero exit code)
+Complete log(s): /global/project/hpcg6049/somatic_pipeline/somatic_pipeline_sm/.snakemake/log/2025-12-07T131214.044529.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.
