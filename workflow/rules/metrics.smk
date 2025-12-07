@@ -16,6 +16,7 @@ rule samtools_flagstat:
         """
         set -euo pipefail
         module --force purge
+        module load StdEnv/2023
         module load apptainer
         apptainer exec --bind /global/project,/global/scratch {params.sif} \
             samtools flagstat {input.bam} > {output.txt} 2> {log}

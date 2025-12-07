@@ -19,6 +19,7 @@ rule mark_duplicates:
         """
         set -euo pipefail
         module --force purge
+        module load StdEnv/2023
         module load apptainer
         
         apptainer exec --bind /global/project,/global/scratch {params.sif} \

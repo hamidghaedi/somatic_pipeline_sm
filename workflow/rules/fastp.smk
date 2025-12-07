@@ -65,6 +65,7 @@ rule fastp_sample:
         r"""
         set -euo pipefail
         module --force purge
+        module load StdEnv/2023
         module load apptainer
 
         # Ensure directory structure exists

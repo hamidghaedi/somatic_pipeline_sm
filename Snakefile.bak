@@ -1,0 +1,78 @@
+import os
+import pandas as pd
+
+configfile: "config/config.yaml"
+
+# --- Validation ---
+if not config.get("manifest"):
+    raise ValueError("ERROR: --config manifest=... is required.")
+if not config.get("fastq_dir"):
+    raise ValueError("ERROR: --config fastq_dir=... is required.")
+if not config.get("batch_out"):
+    config["batch_out"] = os.path.dirname(config["fastq_dir"].rstrip("/"))
+
+# --- Script Paths ---
+config["r_script_merge"] = "workflow/scripts/merge_fastq_lanes.R"
+config["r_script_pairing"] = "workflow/scripts/manifest_pairing_to_pairs.R"
+
+# --- Target Aggregation ---
+def get_downstream_inputs(wildcards):
+    targets = []
+    
+    # 1. Merge Checkpoint Output
+    checkpoint_merge = checkpoints.merge_fastq_lanes.get(**wildcards).output.groups_tsv
+    
+    samples = []
+    try:
+        df_merge = pd.read_csv(checkpoint_merge, sep="\t", comment="#", header=None, names=["prefix", "read", "n_files", "out_file"])
+        if not df_merge.empty:
+            samples = df_merge["prefix"].unique()
+    except pd.errors.EmptyDataError:
+        pass
+
+    if len(samples) > 0:
+        # QC Targets
+        targets.extend([os.path.join(config["batch_out"], "fastp_outs", "reports", f"{s}.fastp.json") for s in samples])
+        if config.get("run_fastqc", True):
+            targets.extend([os.path.join(config["batch_out"], "fastqc_outs", f"{s}.trimmed_1_fastqc.html") for s in samples])
+            
+        # Alignment/Metrics Targets
+        targets.extend([os.path.join(config["batch_out"], "fq2bam_outs", s, f"{s}.analysis_ready.bam") for s in samples])
+        targets.extend([os.path.join(config["batch_out"], "fq2bam_outs", s, f"{s}.wgs_metrics.txt") for s in samples])
+
+    # 2. Variant Calling Checkpoint Output
+    try:
+        checkpoint_plan = checkpoints.plan_variant_calling.get(**wildcards).output.plan
+        df_plan = pd.read_csv(checkpoint_plan, sep="\t")
+        
+        for index, row in df_plan.iterrows():
+            design = row['design']
+            tumor = row['tumor_id']
+            
+            if design == 'paired':
+                normal = row['normal_id']
+                vcf = os.path.join(config["batch_out"], "mutect2_outs", f"{tumor}__vs__{normal}", f"{tumor}__vs__{normal}.filtered.vcf.gz")
+                targets.append(vcf)
+                
+            elif design == 'tumor_only':
+                vcf = os.path.join(config["batch_out"], "mutect2_outs", f"{tumor}__tumor_only", f"{tumor}.filtered.vcf.gz")
+                targets.append(vcf)
+                
+    except (AttributeError, pd.errors.EmptyDataError, FileNotFoundError):
+        pass
+
+    return targets
+
+# --- Includes ---
+include: "workflow/rules/merge.smk"
+include: "workflow/rules/fastp.smk"
+include: "workflow/rules/fastqc.smk"
+include: "workflow/rules/align.smk"
+include: "workflow/rules/process_bam.smk"
+include: "workflow/rules/metrics.smk"
+include: "workflow/rules/mutect2.smk"
+
+# --- Rule All ---
+rule all:
+    input:
+        get_downstream_inputs

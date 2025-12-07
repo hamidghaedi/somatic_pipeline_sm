@@ -1,9 +1,0 @@
-executor: slurm
-jobs: 50
-retries: 0
-default-resources:
-  slurm_account: "def-hpcg6049_cpu"
-  # Partition removed: Let SLURM route based on time/mem/account
-  runtime: 240
-  mem_mb: 4096
-  cpus_per_task: 1

@@ -65,6 +65,7 @@ rule fastqc_sample:
         r"""
         set -euo pipefail
         module --force purge
+        module load StdEnv/2023
         module load apptainer
 
         mkdir -p "{params.outdir}"

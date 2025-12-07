@@ -21,6 +21,7 @@ rule align_bwa_mem2:
         """
         set -euo pipefail
         module --force purge
+        module load StdEnv/2023
         module load apptainer
 
         mkdir -p $(dirname {output.sorted_bam})
