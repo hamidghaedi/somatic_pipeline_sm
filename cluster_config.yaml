@@ -1,0 +1,20 @@
+# cluster_config.yaml
+__default__:
+  account: "def-hpcg6049_cpu"
+  time: "360"
+  cpus-per-task: 1
+  mem-per-cpu: "4G"
+
+fq2bam_gpu:
+  account: "def-hpcg6049_gpu"
+  gres: "gpu:a100:1"
+  cpus-per-task: 32
+  mem: "180G"
+  time: "359"
+
+collect_wgs_metrics_gpu:
+  account: "def-hpcg6049_gpu"
+  gres: "gpu:a100:1"
+  cpus-per-task: 32
+  mem: "128G"
+  time: "120"

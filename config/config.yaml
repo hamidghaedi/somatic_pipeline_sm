@@ -1,0 +1,8 @@
+# config/config.yaml
+batch:
+  # Main batch / run identifier used for directories and report names
+  batch_id: "TFRI-FFPE-DNA-RUN1_2025-10-31"
+
+  # Full path to the *final* manifest (with sample_id column)
+  manifest_csv: "/global/scratch/hpc6049/251031_A01939_0053_BHGK7JDSXF/data/TFRI-FFPE-DNA-RUN1_2025-10-31_manifest.csv"
+

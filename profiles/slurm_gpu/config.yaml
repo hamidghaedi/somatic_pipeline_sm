@@ -1,0 +1,39 @@
+# profiles/slurm_gpu/config.yaml
+# Snakemake 7.32.3 profile for GPU jobs on Frontenac (Parabricks)
+
+# Use SLURM cluster execution via --cluster-config approach
+# The cluster submission command with resource placeholders
+cluster: "sbatch --parsable --account={resources.slurm_account} --cpus-per-task={threads} --mem={resources.mem_mb}M --time={resources.runtime} --gres={resources.slurm_gres} --job-name={rule}.{wildcards} --output=logs/slurm/{rule}.{wildcards}.out --error=logs/slurm/{rule}.{wildcards}.err"
+
+# Max number of SLURM jobs Snakemake may submit in parallel
+jobs: 50
+
+# 1. DEFAULT resources (for CPU jobs like FastQC, FastP, MultiQC)
+default-resources:
+  - slurm_account="def-hpcg6049_cpu"
+  - slurm_partition="compute"
+  - slurm_gres=""
+  - runtime=60
+  - mem_mb=4000
+
+# 2. SPECIFIC resources (Overrides for GPU jobs)
+set-resources:
+  fq2bam_gpu:
+    slurm_account: "def-hpcg6049_gpu"
+    slurm_partition: "gpu"
+    slurm_gres: "gpu:a100:1"
+    mem_mb: 184320
+    runtime: 359
+
+  collect_wgs_metrics_gpu:
+    slurm_account: "def-hpcg6049_gpu"
+    slurm_partition: "gpu"
+    slurm_gres: "gpu:a100:1"
+    mem_mb: 128000
+    runtime: 120
+
+# General Snakemake behaviour
+printshellcmds: true
+keep-going: true
+restart-times: 1
+latency-wait: 60

@@ -90,18 +90,18 @@ FASTP_BASE       = f"{ROOT}/fastp_outs"
 FASTP_TRIM_DIR   = f"{FASTP_BASE}/trimmed_fqs"
 FASTP_REPORT_DIR = f"{FASTP_BASE}/reports"
 FASTP_LOG_DIR    = f"{FASTP_BASE}/logs"
-FQ2BAM_BASE      = f"{ROOT}/fq2bam_cpu_outs"
-MULTIQC_OUTDIR   = f"{ROOT}/multiqc_out"
+FQ2BAM_BASE      = f"{ROOT}/fq2bam_gpu_outs"
+MULTIQC_OUTDIR   = f"{ROOT}/multiqc_gpu_out"
 
 # Container images (SIFs)
 CONTAINER_BASE = "/global/project/hpcg6049/somatic_pipeline/containers/NXF_SINGULARITY_CACHEDIR"
 
-FASTQC_SIF   = f"{CONTAINER_BASE}/fastqc-0.12.1--hdfd78af_0.sif"
-FASTP_SIF    = f"{CONTAINER_BASE}/fastp-1.0.1--heae3180_0.sif"
-BWA_SIF      = f"{CONTAINER_BASE}/bwa-0.7.18--h577a1d6_2.sif"
-SAMTOOLS_SIF = f"{CONTAINER_BASE}/samtools-1.22.1--h96c455f_0.sif"
-GATK_SIF     = f"{CONTAINER_BASE}/gatk4-4.6.2.0--py310hdfd78af_1.sif"
-MULTIQC_SIF  = f"{CONTAINER_BASE}/multiqc-1.32--pyhdfd78af_0.sif"
+FASTQC_SIF      = f"{CONTAINER_BASE}/fastqc-0.12.1--hdfd78af_0.sif"
+FASTP_SIF       = f"{CONTAINER_BASE}/fastp-1.0.1--heae3180_0.sif"
+SAMTOOLS_SIF    = f"{CONTAINER_BASE}/samtools-1.22.1--h96c455f_0.sif"
+GATK_SIF        = f"{CONTAINER_BASE}/gatk4-4.6.2.0--py310hdfd78af_1.sif"
+MULTIQC_SIF     = f"{CONTAINER_BASE}/multiqc-1.32--pyhdfd78af_0.sif"
+PARABRICKS_SIF  = f"{CONTAINER_BASE}/parabrick_4.5.1.sif"
 
 # References
 REF_BASE = "/global/project/hpcg6049/somatic_pipeline/data/references"
@@ -155,54 +155,6 @@ def r2_lanes_for_sample(wc):
         raise ValueError(f"No R2 FASTQs found for sample {wc.sample} with pattern {pattern}")
     return files
 
-
-# -------------------------------------------------------------------------
-# Dynamic runtime for alignment: each 20 GiB of R1 ~= 12 hours
-# -------------------------------------------------------------------------
-
-BLOCK_GIB       = 20
-HOURS_PER_BLOCK = 12
-MIN_HOURS       = 12  # minimum walltime per sample
-
-
-def compute_align_hours_for_sample(sample):
-    """
-    Compute alignment walltime in hours for a given sample based on
-    total R1 lane size.
-    """
-    info = MANIFEST_SAMPLES[sample]
-    fq_dir = info["fastq_dir"]
-    pattern = os.path.join(fq_dir, f"{sample}_S*_L*_R1_001.fastq.gz")
-    files = glob.glob(pattern)
-
-    if not files:
-        return MIN_HOURS
-
-    total_bytes = 0
-    for f in files:
-        try:
-            total_bytes += os.path.getsize(f)
-        except OSError:
-            continue
-
-    if total_bytes <= 0:
-        return MIN_HOURS
-
-    size_gib = total_bytes / (1024.0 ** 3)
-    blocks = int(-(-size_gib // BLOCK_GIB))  # ceil(size_gib / BLOCK_GIB)
-    if blocks < 1:
-        blocks = 1
-    hours = blocks * HOURS_PER_BLOCK
-    if hours < MIN_HOURS:
-        hours = MIN_HOURS
-    return int(hours)
-
-
-# runtime is in MINUTES for the slurm profile (runtime: 240 = 4h)
-ALIGN_RUNTIME_MIN = {
-    sample: compute_align_hours_for_sample(sample) * 60
-    for sample in SAMPLES
-}
 
 # -------------------------------------------------------------------------
 # Helper: write a batch-specific MultiQC config YAML
@@ -274,11 +226,13 @@ rule all:
         expand(f"{FASTP_TRIM_DIR}/{{sample}}.trimmed_1.fastq.gz", sample=SAMPLES),
         expand(f"{FASTP_TRIM_DIR}/{{sample}}.trimmed_2.fastq.gz", sample=SAMPLES),
 
-        # fq2bam: final analysis-ready BAM + index
+        # fq2bam (Parabricks): final analysis-ready BAM + index
         expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.analysis_ready.bam", sample=SAMPLES),
         expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.analysis_ready.bam.bai", sample=SAMPLES),
 
         # QC metrics
+        expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup_metrics.txt", sample=SAMPLES),
+        expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.recal_table.txt", sample=SAMPLES),
         expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.analysis_ready.bam.flagstat", sample=SAMPLES),
         expand(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.wgs_metrics.txt", sample=SAMPLES),
 
@@ -323,9 +277,10 @@ rule fastqc_raw:
         zip  = f"{FASTQC_DIR}/{{sample}}_{{read}}_fastqc.zip"
     log:
         f"{FASTQC_LOGS_DIR}/{{sample}}_{{read}}.fastqc.log"
-    threads: 8
+    threads: 16
     resources:
-        mem_mb = 8000
+        mem_mb = 8000,
+        runtime = 480
     params:
         sif    = FASTQC_SIF,
         outdir = FASTQC_DIR
@@ -356,8 +311,8 @@ rule fastp_sample:
         r1 = lambda w: f"{MERGED_DIR}/{w.sample}_R1.fastq.gz",
         r2 = lambda w: f"{MERGED_DIR}/{w.sample}_R2.fastq.gz"
     output:
-        trimmed_r1 = f"{FASTP_TRIM_DIR}/{{sample}}.trimmed_1.fastq.gz",
-        trimmed_r2 = f"{FASTP_TRIM_DIR}/{{sample}}.trimmed_2.fastq.gz",
+        trimmed_r1 = temp(f"{FASTP_TRIM_DIR}/{{sample}}.trimmed_1.fastq.gz"),
+        trimmed_r2 = temp(f"{FASTP_TRIM_DIR}/{{sample}}.trimmed_2.fastq.gz"),
         json       = f"{FASTP_REPORT_DIR}/{{sample}}.fastp.json",
         html       = f"{FASTP_REPORT_DIR}/{{sample}}.fastp.html"
     log:
@@ -393,28 +348,36 @@ rule fastp_sample:
         """
 
 # =============================================================================
-# Alignment + fq2bam (BWA -> sorted BAM -> MarkDuplicates -> BQSR)
+# fq2bam via Parabricks (GPU)
 # =============================================================================
 
-rule align_bwa_mem:
+rule fq2bam_gpu:
+    """
+    GPU-accelerated fq2bam using NVIDIA Parabricks pbrun fq2bam.
+    Produces analysis-ready BAM + BQSR table + duplicate metrics.
+    """
     input:
         r1 = lambda w: f"{FASTP_TRIM_DIR}/{w.sample}.trimmed_1.fastq.gz",
         r2 = lambda w: f"{FASTP_TRIM_DIR}/{w.sample}.trimmed_2.fastq.gz"
     output:
-        sorted_bam = temp(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.sorted.bam")
+        final_bam     = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.analysis_ready.bam",
+        final_bai     = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.analysis_ready.bam.bai",
+        recal_table   = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.recal_table.txt",
+        dedup_metrics = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup_metrics.txt"
     log:
-        f"{FQ2BAM_BASE}/{{sample}}/logs/align.log"
+        f"{FQ2BAM_BASE}/{{sample}}/logs/fq2bam_gpu.log"
     params:
-        sif_bwa = BWA_SIF,
-        sif_sam = SAMTOOLS_SIF,
-        ref     = REF_FASTA,
-        rg      = lambda w: f"@RG\\tID:{w.sample}\\tLB:{w.sample}\\tPL:ILLUMINA\\tSM:{w.sample}\\tPU:{w.sample}"
+        sif   = PARABRICKS_SIF,
+        ref   = REF_FASTA,
+        mills = KNOWN_SITES_MILLS,
+        kg    = KNOWN_SITES_1KG,
+        dbsnp = KNOWN_SITES_DBSNP
     threads: 32
     resources:
-        mem_mb  = 180000,
-        runtime = lambda w, attempt: ALIGN_RUNTIME_MIN[w.sample]
+        mem_mb  = 184320, 
+        runtime = 350
     message:
-        "Aligning {wildcards.sample} with BWA-MEM and sorting with samtools"
+        "Running Parabricks fq2bam on GPU for {wildcards.sample}"
     shell:
         r"""
         set -euo pipefail
@@ -422,196 +385,33 @@ rule align_bwa_mem:
         module load StdEnv/2023
         module load apptainer
 
-        mkdir -p "$(dirname {output.sorted_bam})"
+        mkdir -p "{FQ2BAM_BASE}/{wildcards.sample}"
         mkdir -p "$(dirname {log})"
 
-        echo "--- Starting BWA MEM Alignment ---" > {log}
-        echo "BWA Container: {params.sif_bwa}" >> {log}
-        echo "Reference: {params.ref}" >> {log}
-        echo "Requested runtime (minutes): {resources.runtime}" >> {log}
-
-        # Fail fast if BWA index is missing
-        if ! ls {params.ref}.bwt >/dev/null 2>&1; then
-             echo "ERROR: BWA index not found: {params.ref}.bwt" >> {log}
-             exit 1
-        fi
-
-        apptainer exec --bind /global/project,/global/scratch {params.sif_bwa} \
-            bwa mem \
-              -t {threads} \
-              -Y \
-              -R '{params.rg}' \
-              {params.ref} \
-              {input.r1} {input.r2} \
-              2>> {log} \
-        | apptainer exec --bind /global/project,/global/scratch {params.sif_sam} \
-            samtools sort \
-              -@ {threads} \
-              -o {output.sorted_bam} \
-              - \
-              2>> {log}
-
-        if [[ ! -s {output.sorted_bam} ]]; then
-            echo "ERROR: Output BAM is missing or empty." >> {log}
-            exit 1
-        fi
-
-        echo "Alignment completed successfully." >> {log}
-        """
-
-
-rule mark_duplicates:
-    input:
-        sorted_bam = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.sorted.bam"
-    output:
-        dedup_bam = temp(f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam"),
-        metrics   = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup_metrics.txt"
-    log:
-        f"{FQ2BAM_BASE}/{{sample}}/logs/markdup.log"
-    params:
-        sif       = GATK_SIF,
-        java_opts = "-Xmx56g"
-    threads: 8
-    resources:
-        mem_mb  = 64000,
-        runtime = 1440
-    message:
-        "Marking duplicates for {wildcards.sample} with GATK MarkDuplicates"
-    shell:
-        r"""
-        set -euo pipefail
-        module --force purge
-        module load StdEnv/2023
-        module load apptainer
-
-        mkdir -p "$(dirname {output.dedup_bam})"
-        mkdir -p "$(dirname {log})"
-
-        apptainer exec --bind /global/project,/global/scratch {params.sif} \
-          gatk MarkDuplicates \
-            --java-options "{params.java_opts}" \
-            -I {input.sorted_bam} \
-            -O {output.dedup_bam} \
-            -M {output.metrics} \
+        apptainer exec \
+          --nv \
+          --bind /global/project,/global/scratch \
+          {params.sif} \
+          pbrun fq2bam \
+            --ref {params.ref} \
+            --in-fq {input.r1} {input.r2} \
+            --read-group-sm {wildcards.sample} \
+            --read-group-lb {wildcards.sample} \
+            --read-group-pl ILLUMINA \
+            --read-group-id-prefix {wildcards.sample} \
+            --bwa-options "-Y -K 10000000" \
+            --knownSites {params.mills} \
+            --knownSites {params.dbsnp} \
+            --knownSites {params.kg} \
+            --out-recal-file {output.recal_table} \
+            --out-duplicate-metrics {output.dedup_metrics} \
+            --out-qc-metrics-dir {FQ2BAM_BASE}/{wildcards.sample}/qc_metrics \
+            --out-bam {output.final_bam} \
           > {log} 2>&1
-        """
-
-
-rule index_dedup:
-    input:
-        dedup_bam = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam"
-    output:
-        bai = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam.bai"
-    log:
-        f"{FQ2BAM_BASE}/{{sample}}/logs/index_dedup.log"
-    params:
-        sif = SAMTOOLS_SIF
-    threads: 1
-    resources:
-        mem_mb  = 4096,
-        runtime = 60
-    message:
-        "Indexing deduplicated BAM for {wildcards.sample}"
-    shell:
-        r"""
-        set -euo pipefail
-        module --force purge
-        module load StdEnv/2023
-        module load apptainer
-
-        apptainer exec --bind /global/project,/global/scratch {params.sif} \
-          samtools index {input.dedup_bam} \
-          > {log} 2>&1
-        """
-
-
-rule bqsr_recal_table:
-    input:
-        bam = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam",
-        bai = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam.bai"
-    output:
-        recal_table = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.recal_table.txt"
-    log:
-        f"{FQ2BAM_BASE}/{{sample}}/logs/bqsr_recal.log"
-    params:
-        sif       = GATK_SIF,
-        ref       = REF_FASTA,
-        mills     = KNOWN_SITES_MILLS,
-        dbsnp     = KNOWN_SITES_DBSNP,
-        kg_indels = KNOWN_SITES_1KG,
-        java_opts = "-Xmx56g"
-    threads: 8
-    resources:
-        mem_mb  = 64000,
-        runtime = 1380
-    message:
-        "Running GATK BaseRecalibrator for {wildcards.sample}"
-    shell:
-        r"""
-        set -euo pipefail
-        module --force purge
-        module load StdEnv/2023
-        module load apptainer
-
-        apptainer exec --bind /global/project,/global/scratch {params.sif} \
-          gatk BaseRecalibrator \
-            --java-options "{params.java_opts}" \
-            -R {params.ref} \
-            -I {input.bam} \
-            --known-sites {params.mills} \
-            --known-sites {params.kg_indels} \
-            --known-sites {params.dbsnp} \
-            -O {output.recal_table} \
-          > {log} 2>&1
-        """
-
-
-rule apply_bqsr:
-    input:
-        bam         = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam",
-        recal_table = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.recal_table.txt",
-        bai         = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.dedup.bam.bai"
-    output:
-        final_bam = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.analysis_ready.bam",
-        final_bai = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.analysis_ready.bam.bai"
-    log:
-        f"{FQ2BAM_BASE}/{{sample}}/logs/apply_bqsr.log"
-    params:
-        sif       = GATK_SIF,
-        ref       = REF_FASTA,
-        java_opts = "-Xmx56g"
-    threads: 8
-    resources:
-        mem_mb  = 64000,
-        runtime = 1380
-    message:
-        "Applying BQSR to {wildcards.sample} and producing analysis-ready BAM"
-    shell:
-        r"""
-        set -euo pipefail
-        module --force purge
-        module load StdEnv/2023
-        module load apptainer
-
-        apptainer exec --bind /global/project,/global/scratch {params.sif} \
-          gatk ApplyBQSR \
-            --java-options "{params.java_opts}" \
-            -R {params.ref} \
-            -I {input.bam} \
-            --bqsr-recal-file {input.recal_table} \
-            -O {output.final_bam} \
-            --create-output-bam-index true \
-          > {log} 2>&1
-
-        # Ensure index exists at expected path
-        if [[ ! -s {output.final_bai} ]]; then
-          apptainer exec --bind /global/project,/global/scratch {SAMTOOLS_SIF} \
-            samtools index {output.final_bam}
-        fi
         """
 
 # =============================================================================
-# QC metrics: samtools flagstat + GATK CollectWgsMetrics
+# QC metrics: samtools flagstat + Parabricks bammetrics
 # =============================================================================
 
 rule samtools_flagstat:
@@ -629,7 +429,7 @@ rule samtools_flagstat:
         mem_mb  = 8000,
         runtime = 480
     message:
-        "Running samtools flagstat on {wildcards.sample}.analysis_ready.bam"
+        "Running samtools flagstat on analysis-ready BAM for {wildcards.sample}"
     shell:
         r"""
         set -euo pipefail
@@ -637,13 +437,19 @@ rule samtools_flagstat:
         module load StdEnv/2023
         module load apptainer
 
+        mkdir -p "$(dirname {log})"
+
         apptainer exec --bind /global/project,/global/scratch {params.sif} \
           samtools flagstat {input.bam} \
           > {output.txt} 2> {log}
         """
 
 
-rule collect_wgs_metrics:
+rule collect_wgs_metrics_gpu:
+    """
+    GPU-accelerated WGS metrics using Parabricks pbrun bammetrics.
+    Output stays in {sample}.wgs_metrics.txt for MultiQC compatibility.
+    """
     input:
         bam = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.analysis_ready.bam",
         bai = f"{FQ2BAM_BASE}/{{sample}}/{{sample}}.analysis_ready.bam.bai"
@@ -652,15 +458,14 @@ rule collect_wgs_metrics:
     log:
         f"{FQ2BAM_BASE}/{{sample}}/logs/wgs_metrics.log"
     params:
-        sif       = GATK_SIF,
-        ref       = REF_FASTA,
-        java_opts = "-Xmx56g"
-    threads: 16
+        sif = PARABRICKS_SIF,
+        ref = REF_FASTA
+    threads: 32
     resources:
-        mem_mb  = 64000,
-        runtime = 1439
+        mem_mb  = 128000,
+        runtime = 120
     message:
-        "Collecting WGS metrics for {wildcards.sample}.analysis_ready.bam"
+        "Collecting WGS metrics with Parabricks bammetrics for {wildcards.sample}"
     shell:
         r"""
         set -euo pipefail
@@ -668,12 +473,16 @@ rule collect_wgs_metrics:
         module load StdEnv/2023
         module load apptainer
 
-        apptainer exec --bind /global/project,/global/scratch {params.sif} \
-          gatk CollectWgsMetrics \
-            --java-options "{params.java_opts}" \
-            -I {input.bam} \
-            -O {output.metrics} \
-            -R {params.ref} \
+        mkdir -p "$(dirname {log})"
+
+        apptainer exec \
+          --nv \
+          --bind /global/project,/global/scratch \
+          {params.sif} \
+          pbrun bammetrics \
+            --ref {params.ref} \
+            --bam {input.bam} \
+            --out-metrics-file {output.metrics} \
           > {log} 2>&1
         """
 
@@ -705,7 +514,6 @@ rule multiqc:
         outdir      = MULTIQC_OUTDIR,
         batch_name  = TARGET_BATCH_ID,
         config      = MULTIQC_BATCH_CONFIG,
-        # MultiQC: -n <name> -> <name>.html and <name>_data/
         report_name = f"{TARGET_BATCH_ID}_multiqc_report",
         data_dir    = f"{MULTIQC_OUTDIR}/{TARGET_BATCH_ID}_multiqc_report_data"
     threads: 2
@@ -722,14 +530,7 @@ rule multiqc:
         module load apptainer
 
         mkdir -p "{params.outdir}"
-
-        echo "--- MultiQC configuration ---" > {log}
-        echo "Container: {params.sif}"       >> {log}
-        echo "FASTP Dir: {params.fastp_dir}" >> {log}
-        echo "Align Dir: {params.align_dir}" >> {log}
-        echo "Config:    {params.config}"    >> {log}
-        echo "Report:    {output.html}"      >> {log}
-        echo ""                              >> {log}
+        mkdir -p "$(dirname {log})"
 
         # Clean any previous report so MultiQC doesn't create *_1.html
         rm -f  "{output.html}"
@@ -746,12 +547,4 @@ rule multiqc:
             "{params.fastp_dir}" \
             "{params.align_dir}" \
           >> {log} 2>&1
-
-        # Sanity check: MultiQC must produce the expected HTML
-        if [[ ! -f "{output.html}" ]]; then
-          echo "ERROR: MultiQC did not produce expected HTML: {output.html}" >> {log}
-          exit 1
-        fi
-
-        echo "MultiQC completed successfully for batch {params.batch_name}" >> {log}
         """
